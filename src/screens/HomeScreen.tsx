@@ -8,8 +8,8 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.content}>
-      <Text style={[styles.title, { color: theme.primaryText }]}>Welcome to Laundry Tracker</Text>
-      <Text style={[styles.subtitle, { color: theme.secondaryText }]}>Keep track of your hostel laundry</Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>Welcome to Laundry Tracker</Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>Keep track of your hostel laundry</Text>
       
       <View style={styles.buttonContainer}>
         <TouchableOpacity

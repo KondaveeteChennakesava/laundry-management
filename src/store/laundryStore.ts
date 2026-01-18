@@ -12,6 +12,8 @@ interface LaundryState {
   markAsReturned: (id: string) => void;
   getPendingRecords: () => LaundryRecord[];
   getReturnedRecords: () => LaundryRecord[];
+  clearAllRecords: () => void;
+  importRecords: (records: LaundryRecord[]) => void;
 }
 
 export const useLaundryStore = create<LaundryState>()(
@@ -76,6 +78,19 @@ export const useLaundryStore = create<LaundryState>()(
       
       getPendingRecords: () => get().records.filter((r) => r.status === 'pending'),
       getReturnedRecords: () => get().records.filter((r) => r.status === 'returned'),
+      
+      clearAllRecords: () => {
+        const records = get().records;
+        records.forEach((record) => {
+          if (record.notificationId) {
+            cancelNotification(record.notificationId).catch(console.error);
+          }
+        });
+        set({ records: [] });
+      },
+      
+      importRecords: (records) =>
+        set({ records }),
     }),
     {
       name: 'laundry-records-storage',

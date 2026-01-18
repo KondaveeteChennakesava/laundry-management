@@ -9,6 +9,8 @@ interface CategoryState {
   updateCategory: (id: string, updates: Partial<Category>) => void;
   deleteCategory: (id: string) => void;
   reorderCategories: (categories: Category[]) => void;
+  resetToDefaults: () => void;
+  importCategories: (categories: Category[]) => void;
 }
 
 const defaultCategories: Category[] = [
@@ -50,6 +52,12 @@ export const useCategoryStore = create<CategoryState>()(
         })),
       
       reorderCategories: (categories) =>
+        set({ categories }),
+      
+      resetToDefaults: () =>
+        set({ categories: defaultCategories }),
+      
+      importCategories: (categories) =>
         set({ categories }),
     }),
     {

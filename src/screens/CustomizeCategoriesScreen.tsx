@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { CustomizeCategoriesScreenProps } from '../Navigation';
 import { useCategoryStore } from '../store/categoryStore';
+import { useThemeStore } from '../store/themeStore';
 import { Category } from '../types';
 
 export default function CustomizeCategoriesScreen({ navigation }: CustomizeCategoriesScreenProps) {
@@ -18,6 +19,7 @@ export default function CustomizeCategoriesScreen({ navigation }: CustomizeCateg
   const addCategory = useCategoryStore((state) => state.addCategory);
   const updateCategory = useCategoryStore((state) => state.updateCategory);
   const deleteCategory = useCategoryStore((state) => state.deleteCategory);
+  const theme = useThemeStore((state) => state.theme);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -79,34 +81,34 @@ export default function CustomizeCategoriesScreen({ navigation }: CustomizeCateg
   };
 
   const renderItem = ({ item }: { item: Category }) => (
-    <View style={styles.categoryItem}>
+    <View style={[styles.categoryItem, { backgroundColor: theme.cardBackground }]}>
       <View style={styles.categoryInfo}>
         <Text style={styles.categoryIcon}>{item.icon}</Text>
-        <Text style={styles.categoryName}>{item.name}</Text>
+        <Text style={[styles.categoryName, { color: theme.primaryText }]}>{item.name}</Text>
       </View>
       
       <View style={styles.actionButtons}>
         <TouchableOpacity
-          style={styles.editButton}
+          style={[styles.editButton, { backgroundColor: theme.editButton }]}
           onPress={() => openEditModal(item)}
         >
-          <Text style={styles.editButtonText}>Edit</Text>
+          <Text style={[styles.editButtonText, { color: theme.editText }]}>Edit</Text>
         </TouchableOpacity>
         
         <TouchableOpacity
-          style={styles.deleteButton}
+          style={[styles.deleteButton, { backgroundColor: theme.dangerButton }]}
           onPress={() => handleDelete(item)}
         >
-          <Text style={styles.deleteButtonText}>✕</Text>
+          <Text style={[styles.deleteButtonText, { color: theme.dangerText }]}>✕</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.addButton} onPress={openAddModal}>
-        <Text style={styles.addButtonText}>+ Add Category</Text>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <TouchableOpacity style={[styles.addButton, { backgroundColor: theme.primaryButton }]} onPress={openAddModal}>
+        <Text style={[styles.addButtonText, { color: theme.primaryButtonText }]}>+ Add Category</Text>
       </TouchableOpacity>
 
       <FlatList
@@ -123,42 +125,42 @@ export default function CustomizeCategoriesScreen({ navigation }: CustomizeCateg
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
+          <View style={[styles.modalContent, { backgroundColor: theme.cardBackground }]}>
+            <Text style={[styles.modalTitle, { color: theme.primaryText }]}>
               {editingCategory ? 'Edit Category' : 'Add Category'}
             </Text>
 
-            <Text style={styles.inputLabel}>Category Name</Text>
+            <Text style={[styles.inputLabel, { color: theme.secondaryText }]}>Category Name</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.border, color: theme.inputText }]}
               value={categoryName}
               onChangeText={setCategoryName}
               placeholder="e.g., Shirts"
-              placeholderTextColor="#999"
+              placeholderTextColor={theme.placeholder}
             />
 
-            <Text style={styles.inputLabel}>Icon/Emoji</Text>
+            <Text style={[styles.inputLabel, { color: theme.secondaryText }]}>Icon/Emoji</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: theme.inputBackground, borderColor: theme.border, color: theme.inputText }]}
               value={categoryIcon}
               onChangeText={setCategoryIcon}
               placeholder="e.g., 👕"
-              placeholderTextColor="#999"
+              placeholderTextColor={theme.placeholder}
             />
 
             <View style={styles.modalButtons}>
               <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
+                style={[styles.modalButton, { backgroundColor: theme.inputBackground, borderColor: theme.border }]}
                 onPress={() => setModalVisible(false)}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text style={[styles.cancelButtonText, { color: theme.secondaryText }]}>Cancel</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.modalButton, styles.saveModalButton]}
+                style={[styles.modalButton, { backgroundColor: theme.successButton }]}
                 onPress={handleSave}
               >
-                <Text style={styles.saveButtonText}>Save</Text>
+                <Text style={[styles.saveButtonText, { color: theme.successText }]}>Save</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -171,19 +173,16 @@ export default function CustomizeCategoriesScreen({ navigation }: CustomizeCateg
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#faf8f3',
     paddingTop: 16,
     paddingBottom: 16,
   },
   addButton: {
-    backgroundColor: '#90caf9',
     padding: 16,
     margin: 16,
     borderRadius: 8,
     alignItems: 'center',
   },
   addButtonText: {
-    color: '#1e3a5f',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -195,7 +194,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
     padding: 16,
     borderRadius: 8,
     marginBottom: 12,
@@ -213,25 +211,21 @@ const styles = StyleSheet.create({
   categoryName: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#333',
   },
   actionButtons: {
     flexDirection: 'row',
     gap: 10,
   },
   editButton: {
-    backgroundColor: '#e0e0e0',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 6,
   },
   editButtonText: {
-    color: '#37474f',
     fontSize: 14,
     fontWeight: '600',
   },
   deleteButton: {
-    backgroundColor: '#ef9a9a',
     width: 36,
     height: 36,
     borderRadius: 18,
@@ -239,7 +233,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   deleteButtonText: {
-    color: '#c62828',
     fontSize: 20,
     fontWeight: 'bold',
   },
@@ -250,7 +243,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 24,
     width: '85%',
@@ -259,20 +251,16 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#333',
     marginBottom: 20,
     textAlign: 'center',
   },
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#666',
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#f5f5f5',
     borderWidth: 1,
-    borderColor: '#ddd',
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
@@ -288,22 +276,13 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
-  },
-  cancelButton: {
-    backgroundColor: '#f5f5f5',
     borderWidth: 1,
-    borderColor: '#ddd',
   },
   cancelButtonText: {
-    color: '#666',
     fontSize: 16,
     fontWeight: '600',
   },
-  saveModalButton: {
-    backgroundColor: '#a5d6a7',
-  },
   saveButtonText: {
-    color: '#2e7d32',
     fontSize: 16,
     fontWeight: 'bold',
   },
