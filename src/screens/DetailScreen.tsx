@@ -2,19 +2,21 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { DetailScreenProps } from '../Navigation';
 import { useLaundryStore } from '../store/laundryStore';
+import { useThemeStore } from '../store/themeStore';
 
 export default function DetailScreen({ route, navigation }: DetailScreenProps) {
   const { recordId } = route.params;
   const records = useLaundryStore((state) => state.records);
   const markAsReturned = useLaundryStore((state) => state.markAsReturned);
   const deleteRecord = useLaundryStore((state) => state.deleteRecord);
+  const theme = useThemeStore((state) => state.theme);
 
   const record = records.find((r) => r.id === recordId);
 
   if (!record) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Record not found</Text>
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <Text style={[styles.errorText, { color: theme.secondaryText }]}>Record not found</Text>
       </View>
     );
   }
@@ -57,20 +59,20 @@ export default function DetailScreen({ route, navigation }: DetailScreenProps) {
   const isPending = record.status === 'pending';
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        <View style={styles.infoCard}>
+        <View style={[styles.infoCard, { backgroundColor: theme.cardBackground }]}>
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Date Given:</Text>
-            <Text style={styles.infoValue}>
+            <Text style={[styles.infoLabel, { color: theme.secondaryText }]}>Date Given:</Text>
+            <Text style={[styles.infoValue, { color: theme.primaryText }]}>
               {new Date(record.dateGiven).toLocaleDateString()}
             </Text>
           </View>
           
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Status:</Text>
-            <View style={[styles.statusBadge, isPending ? styles.pendingBadge : styles.returnedBadge]}>
-              <Text style={styles.statusText}>
+            <Text style={[styles.infoLabel, { color: theme.secondaryText }]}>Status:</Text>
+            <View style={[styles.statusBadge, isPending ? { backgroundColor: theme.pendingBadge } : { backgroundColor: theme.returnedBadge }]}>
+              <Text style={[styles.statusText, { color: isPending ? theme.pendingText : theme.returnedText }]}>
                 {isPending ? 'Pending' : 'Returned'}
               </Text>
             </View>
@@ -78,8 +80,8 @@ export default function DetailScreen({ route, navigation }: DetailScreenProps) {
           
           {record.dateReturned && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Date Returned:</Text>
-              <Text style={styles.infoValue}>
+              <Text style={[styles.infoLabel, { color: theme.secondaryText }]}>Date Returned:</Text>
+              <Text style={[styles.infoValue, { color: theme.primaryText }]}>
                 {new Date(record.dateReturned).toLocaleDateString()}
               </Text>
             </View>
@@ -87,58 +89,60 @@ export default function DetailScreen({ route, navigation }: DetailScreenProps) {
         </View>
 
         {record.expectedPickupTime && (
-          <View style={styles.pickupCard}>
-            <Text style={styles.pickupTitle}>📅 Expected Pickup</Text>
-            <Text style={styles.pickupTime}>
+          <View style={[styles.pickupCard, { backgroundColor: theme.cardBackground, borderLeftColor: theme.accentLight }]}>
+            <Text style={[styles.pickupTitle, { color: theme.primaryText }]}>📅 Expected Pickup</Text>
+            <Text style={[styles.pickupTime, { color: theme.accentLight }]}>
               {new Date(record.expectedPickupTime).toLocaleString()}
             </Text>
             {record.alarmEnabled && (
-              <Text style={styles.alarmIndicator}>🔔 Alarm enabled</Text>
+              <Text style={[styles.alarmIndicator, { color: theme.secondaryText }]}>🔔 Alarm enabled</Text>
             )}
           </View>
         )}
 
         {record.notes && (
-          <View style={styles.notesCard}>
-            <Text style={styles.notesTitle}>Notes</Text>
-            <Text style={styles.notesText}>{record.notes}</Text>
+          <View style={[styles.notesCard, { backgroundColor: theme.cardBackground, borderLeftColor: theme.accentLight }]}>
+            <Text style={[styles.notesTitle, { color: theme.primaryText }]}>Notes</Text>
+            <Text style={[styles.notesText, { color: theme.secondaryText }]}>{record.notes}</Text>
           </View>
         )}
 
-        <Text style={styles.sectionTitle}>Items</Text>
+        <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>Items</Text>
         
         {record.items.map((item, index) => (
-          <View key={index} style={styles.itemCard}>
+          <View key={index} style={[styles.itemCard, { backgroundColor: theme.cardBackground }]}>
             <Text style={styles.itemIcon}>{item.categoryIcon}</Text>
             <View style={styles.itemInfo}>
-              <Text style={styles.itemName}>{item.categoryName}</Text>
-              <Text style={styles.itemQuantity}>Quantity: {item.quantity}</Text>
+              <Text style={[styles.itemName, { color: theme.primaryText }]}>{item.categoryName}</Text>
+              <Text style={[styles.itemQuantity, { color: theme.secondaryText }]}>Quantity: {item.quantity}</Text>
             </View>
           </View>
         ))}
 
-        <View style={styles.totalCard}>
-          <Text style={styles.totalLabel}>Total Items:</Text>
-          <Text style={styles.totalValue}>{record.totalItems}</Text>
+        <View style={[styles.totalCard, { backgroundColor: theme.accentLight }]}>
+          <Text style={[styles.totalLabel, { color: theme.primaryButtonText }]}>Total Items:</Text>
+          <Text style={[styles.totalValue, { color: theme.primaryButtonText }]}>{record.totalItems}</Text>
         </View>
       </ScrollView>
 
-      <View style={styles.actionButtons}>
-        {isPending && (
+      <View style={[styles.actionButtons, { backgroundColor: theme.cardBackground, borderTopColor: theme.divider }]}>
+        <View style={styles.buttonRow}>
+          {isPending && (
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: theme.successButton }]}
+              onPress={handleMarkAsReturned}
+            >
+              <Text style={[styles.buttonText, { color: theme.successText }]}>Mark as Returned</Text>
+            </TouchableOpacity>
+          )}
+          
           <TouchableOpacity
-            style={[styles.button, styles.returnButton]}
-            onPress={handleMarkAsReturned}
+            style={[styles.button, { backgroundColor: theme.dangerButton }, isPending && styles.deleteButtonWithReturn]}
+            onPress={handleDelete}
           >
-            <Text style={styles.buttonText}>Mark as Returned</Text>
+            <Text style={[styles.buttonText, { color: theme.dangerText }]}>Delete Entry</Text>
           </TouchableOpacity>
-        )}
-        
-        <TouchableOpacity
-          style={[styles.button, styles.deleteButton]}
-          onPress={handleDelete}
-        >
-          <Text style={styles.buttonText}>Delete Entry</Text>
-        </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -147,16 +151,16 @@ export default function DetailScreen({ route, navigation }: DetailScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#faf8f3',
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     padding: 16,
+    paddingTop: 20,
+    paddingBottom: 20,
   },
   infoCard: {
-    backgroundColor: '#fff',
     padding: 16,
     borderRadius: 8,
     marginBottom: 20,
@@ -170,12 +174,10 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 16,
-    color: '#666',
     fontWeight: '500',
   },
   infoValue: {
     fontSize: 16,
-    color: '#333',
     fontWeight: 'bold',
   },
   statusBadge: {
@@ -183,73 +185,57 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 12,
   },
-  pendingBadge: {
-    backgroundColor: '#fff9c4',
-  },
-  returnedBadge: {
-    backgroundColor: '#c8e6c9',
-  },
+  pendingBadge: {},
+  returnedBadge: {},
   statusText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
   },
   notesCard: {
-    backgroundColor: '#fff9e6',
     padding: 16,
     borderRadius: 8,
     marginBottom: 20,
     borderLeftWidth: 4,
-    borderLeftColor: '#ffb74d',
   },
   notesTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#e65100',
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   notesText: {
     fontSize: 15,
-    color: '#5d4037',
     lineHeight: 22,
   },
   pickupCard: {
-    backgroundColor: '#e8f5e9',
     padding: 16,
     borderRadius: 8,
     marginBottom: 20,
     borderLeftWidth: 4,
-    borderLeftColor: '#66bb6a',
   },
   pickupTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#2e7d32',
     marginBottom: 8,
   },
   pickupTime: {
     fontSize: 16,
-    color: '#1b5e20',
     fontWeight: '600',
   },
   alarmIndicator: {
     fontSize: 12,
-    color: '#558b2f',
     marginTop: 4,
     fontStyle: 'italic',
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
     marginBottom: 12,
   },
   itemCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     padding: 16,
     borderRadius: 8,
     marginBottom: 10,
@@ -265,18 +251,15 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
     marginBottom: 4,
   },
   itemQuantity: {
     fontSize: 14,
-    color: '#666',
   },
   totalCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#bbdefb',
     padding: 20,
     borderRadius: 8,
     marginTop: 10,
@@ -284,39 +267,37 @@ const styles = StyleSheet.create({
   totalLabel: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1e3a5f',
   },
   totalValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1e3a5f',
   },
   actionButtons: {
     padding: 16,
-    backgroundColor: '#fff',
+    paddingBottom: 24,
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 12,
   },
   button: {
+    flex: 1,
     paddingVertical: 16,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 10,
   },
-  returnButton: {
-    backgroundColor: '#a5d6a7',
+  deleteButtonWithReturn: {
+    flex: 0.5,
   },
-  deleteButton: {
-    backgroundColor: '#ef9a9a',
-  },
+  returnButton: {},
+  deleteButton: {},
   buttonText: {
-    color: '#2e3a3f',
     fontSize: 16,
     fontWeight: 'bold',
   },
   errorText: {
     fontSize: 18,
-    color: '#666',
     textAlign: 'center',
     marginTop: 50,
   },

@@ -1,28 +1,31 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { HomeScreenProps } from '../Navigation';
+import { useThemeStore } from '../store/themeStore';
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
+  const theme = useThemeStore((state) => state.theme);
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Laundry Tracker</Text>
-      <Text style={styles.subtitle}>Keep track of your hostel laundry</Text>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={styles.content}>
+      <Text style={[styles.title, { color: theme.primaryText }]}>Welcome to Laundry Tracker</Text>
+      <Text style={[styles.subtitle, { color: theme.secondaryText }]}>Keep track of your hostel laundry</Text>
       
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, { backgroundColor: theme.primaryButton }]}
           onPress={() => navigation.navigate('NewEntry')}
         >
           <Text style={styles.buttonIcon}>➕</Text>
-          <Text style={styles.buttonText}>New Entry</Text>
+          <Text style={[styles.buttonText, { color: theme.primaryButtonText }]}>New Entry</Text>
         </TouchableOpacity>
         
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, { backgroundColor: theme.primaryButton }]}
           onPress={() => navigation.navigate('History')}
         >
           <Text style={styles.buttonIcon}>📋</Text>
-          <Text style={styles.buttonText}>History</Text>
+          <Text style={[styles.buttonText, { color: theme.primaryButtonText }]}>History</Text>
         </TouchableOpacity>
       </View>
       
@@ -30,8 +33,9 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         style={styles.settingsButton}
         onPress={() => navigation.navigate('Settings')}
       >
-        <Text style={styles.settingsText}>⚙️ Settings</Text>
+        <Text style={[styles.settingsText, { color: theme.accentLight }]}>⚙️ Settings</Text>
       </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -39,21 +43,23 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#faf8f3',
+  },
+  content: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    paddingTop: 30,
+    paddingBottom: 30,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#333',
     marginBottom: 10,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
     marginBottom: 50,
     textAlign: 'center',
   },
@@ -62,7 +68,6 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   button: {
-    backgroundColor: '#bbdefb',
     paddingVertical: 30,
     paddingHorizontal: 20,
     borderRadius: 12,
@@ -78,7 +83,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonText: {
-    color: '#37474f',
     fontSize: 20,
     fontWeight: 'bold',
   },
@@ -88,7 +92,6 @@ const styles = StyleSheet.create({
   },
   settingsText: {
     fontSize: 16,
-    color: '#78909c',
     fontWeight: '600',
   },
 });

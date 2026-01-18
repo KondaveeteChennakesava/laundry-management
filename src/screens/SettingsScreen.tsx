@@ -1,12 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Switch } from 'react-native';
 import { SettingsScreenProps } from '../Navigation';
 import { useLaundryStore } from '../store/laundryStore';
 import { useCategoryStore } from '../store/categoryStore';
+import { useThemeStore } from '../store/themeStore';
 
 export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   const records = useLaundryStore((state) => state.records);
   const categories = useCategoryStore((state) => state.categories);
+  const { theme, isDarkMode, toggleTheme } = useThemeStore();
 
   const handleExportData = () => {
     const data = {
@@ -42,48 +44,63 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Categories</Text>
+        <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>Appearance</Text>
+        
+        <View style={[styles.menuItem, { backgroundColor: theme.cardBackground }]}>
+          <Text style={styles.menuItemIcon}>🌙</Text>
+          <Text style={[styles.menuItemText, { color: theme.primaryText }]}>Dark Mode</Text>
+          <Switch
+            value={isDarkMode}
+            onValueChange={toggleTheme}
+            trackColor={{ false: '#d0d0d0', true: '#64b5f6' }}
+            thumbColor={isDarkMode ? '#1976d2' : '#f4f3f4'}
+          />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>Categories</Text>
         <TouchableOpacity
-          style={styles.menuItem}
+          style={[styles.menuItem, { backgroundColor: theme.cardBackground }]}
           onPress={() => navigation.navigate('CustomizeCategories')}
         >
           <Text style={styles.menuItemIcon}>✏️</Text>
-          <Text style={styles.menuItemText}>Customize Categories</Text>
-          <Text style={styles.menuItemArrow}>›</Text>
+          <Text style={[styles.menuItemText, { color: theme.primaryText }]}>Customize Categories</Text>
+          <Text style={[styles.menuItemArrow, { color: theme.tertiaryText }]}>›</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Data</Text>
+        <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>Data</Text>
         
-        <TouchableOpacity style={styles.menuItem} onPress={handleExportData}>
+        <TouchableOpacity style={[styles.menuItem, { backgroundColor: theme.cardBackground }]} onPress={handleExportData}>
           <Text style={styles.menuItemIcon}>📤</Text>
-          <Text style={styles.menuItemText}>Export Data</Text>
-          <Text style={styles.menuItemArrow}>›</Text>
+          <Text style={[styles.menuItemText, { color: theme.primaryText }]}>Export Data</Text>
+          <Text style={[styles.menuItemArrow, { color: theme.tertiaryText }]}>›</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.menuItem} onPress={handleClearAllData}>
+        <TouchableOpacity style={[styles.menuItem, { backgroundColor: theme.cardBackground }]} onPress={handleClearAllData}>
           <Text style={styles.menuItemIcon}>🗑️</Text>
-          <Text style={styles.menuItemText}>Clear All Data</Text>
-          <Text style={styles.menuItemArrow}>›</Text>
+          <Text style={[styles.menuItemText, { color: theme.primaryText }]}>Clear All Data</Text>
+          <Text style={[styles.menuItemArrow, { color: theme.tertiaryText }]}>›</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>About</Text>
-        <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>Version</Text>
-          <Text style={styles.infoValue}>1.0.0</Text>
+        <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>About</Text>
+        <View style={[styles.infoItem, { backgroundColor: theme.cardBackground }]}>
+          <Text style={[styles.infoLabel, { color: theme.secondaryText }]}>Version</Text>
+          <Text style={[styles.infoValue, { color: theme.primaryText }]}>1.1.0</Text>
         </View>
-        <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>Total Records</Text>
-          <Text style={styles.infoValue}>{records.length}</Text>
+        <View style={[styles.infoItem, { backgroundColor: theme.cardBackground }]}>
+          <Text style={[styles.infoLabel, { color: theme.secondaryText }]}>Total Records</Text>
+          <Text style={[styles.infoValue, { color: theme.primaryText }]}>{records.length}</Text>
         </View>
-        <View style={styles.infoItem}>
-          <Text style={styles.infoLabel}>Categories</Text>
-          <Text style={styles.infoValue}>{categories.length}</Text>
+        <View style={[styles.infoItem, { backgroundColor: theme.cardBackground }]}>
+          <Text style={[styles.infoLabel, { color: theme.secondaryText }]}>Categories</Text>
+          <Text style={[styles.infoValue, { color: theme.primaryText }]}>{categories.length}</Text>
         </View>
       </View>
     </View>
@@ -93,8 +110,9 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#faf8f3',
     padding: 16,
+    paddingTop: 20,
+    paddingBottom: 20,
   },
   section: {
     marginBottom: 30,
@@ -102,14 +120,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
     marginBottom: 12,
     paddingLeft: 4,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     padding: 16,
     borderRadius: 8,
     marginBottom: 8,
@@ -122,29 +138,24 @@ const styles = StyleSheet.create({
   menuItemText: {
     flex: 1,
     fontSize: 16,
-    color: '#333',
     fontWeight: '500',
   },
   menuItemArrow: {
     fontSize: 24,
-    color: '#999',
   },
   infoItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
     padding: 16,
     borderRadius: 8,
     marginBottom: 8,
   },
   infoLabel: {
     fontSize: 16,
-    color: '#666',
   },
   infoValue: {
     fontSize: 16,
-    color: '#333',
     fontWeight: 'bold',
   },
 });

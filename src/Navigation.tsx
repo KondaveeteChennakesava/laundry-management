@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useThemeStore } from './store/themeStore';
 
 // Import screens
 import HomeScreen from './screens/HomeScreen';
@@ -31,15 +32,17 @@ export type CustomizeCategoriesScreenProps = NativeStackScreenProps<RootStackPar
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Navigation() {
+  const theme = useThemeStore((state) => state.theme);
+  
   return (
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="Home"
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#42a5f5',
+            backgroundColor: theme.headerBackground,
           },
-          headerTintColor: '#ffffff',
+          headerTintColor: theme.headerText,
           headerTitleStyle: {
             fontWeight: 'bold',
           },
